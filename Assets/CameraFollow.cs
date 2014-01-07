@@ -6,8 +6,8 @@ public class CameraFollow : MonoBehaviour {
 	public GameObject target;
 	public Vector3 offset;
 
-	const float CAMERA_TURN_SPEED = 0.9f;
-	const float CAMERA_FOLLOW_SPEED = 0.9f;
+	const float CAMERA_TURN_SPEED = 0.1f;
+	const float CAMERA_FOLLOW_SPEED = 0.1f;
 
 	public bool DEBUG_LERP_ON = false;
 
