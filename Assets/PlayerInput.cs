@@ -9,6 +9,5 @@ public class PlayerInput : BaseInput {
 
 	void Update () {
 		dir = new Vector3 (Input.GetAxis ("Horizontal"), 0.0f, Input.GetAxis ("Vertical"));
-		sprint = Input.GetButton("Sprint");
 	}
 }
