@@ -26,7 +26,8 @@ public class Player : MonoBehaviour {
 	void Update () {
 		float speedMod = input.sprint ? 2.0f : 1.0f;
 		rigidbody.MovePosition(transform.position + transform.TransformDirection(new Vector3(0.0f, 0.0f, input.dir.z)) * moveSpeed * speedMod * Time.deltaTime);
-		transform.Rotate (new Vector3(0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime);
+		rigidbody.MoveRotation (Quaternion.Euler(transform.eulerAngles + new Vector3 (0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime));
+		//transform.Rotate (new Vector3(0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime);
 
 		bottomAnimator.SetBool("Running", input.dir.z != 0.0f);
 		bottomAnimator.SetBool("Sprinting", input.sprint);
