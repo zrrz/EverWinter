@@ -32,7 +32,9 @@ public class Player : MonoBehaviour {
 		bottomAnimator.SetBool("Sprinting", input.sprint);
 
 		grounded = CheckGrounded();
+		bottomAnimator.SetBool("Grounded", grounded);
 
+		bottomAnimator.SetBool("Jump", false);
 		if (grounded) {
 			if(input.jump) {
 				rigidbody.AddForce(Vector3.up * jumpStrength);
