@@ -34,6 +34,7 @@ public class Player : MonoBehaviour {
 	}
 
 	void Update () {
+		//-------------------Snow stuff---------------------//
 		if (moved) {
 			snowLevel -= snowAccumSpeed * 5.0f * Time.deltaTime;
 			if(snowLevel < 0.1f) {
@@ -52,6 +53,8 @@ public class Player : MonoBehaviour {
 		bottomAnimator.SetFloat ("SnowLevel", snowLevel);
 		topAnimator.SetFloat ("SnowLevel", snowLevel);
 
+		//---------------------------------------------------//
+		//---------------------Movement----------------------//
 		float speedMod = input.sprint ? 2.0f : 1.0f;
 		rigidbody.MovePosition(transform.position + transform.TransformDirection(new Vector3(0.0f, 0.0f, input.dir.z)) * moveSpeed * speedMod * Time.deltaTime);
 		rigidbody.MoveRotation (Quaternion.Euler(transform.eulerAngles + new Vector3 (0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime));
@@ -60,16 +63,23 @@ public class Player : MonoBehaviour {
 		bottomAnimator.SetBool("Running", input.dir.z != 0.0f);
 		bottomAnimator.SetBool("Sprinting", input.sprint);
 
+		topAnimator.SetBool("Running", input.dir.z != 0.0f);
+		topAnimator.SetBool("Sprinting", input.sprint);
+
 		grounded = CheckGrounded();
 		bottomAnimator.SetBool("Grounded", grounded);
+		topAnimator.SetBool("Grounded", grounded);
 
 		bottomAnimator.SetBool("Jump", false);
+		topAnimator.SetBool("Jump", false);
 		if (grounded) {
 			if(input.jump) {
 				rigidbody.AddForce(Vector3.up * jumpStrength);
 				bottomAnimator.SetBool("Jump", true);
+				topAnimator.SetBool("Jump", true);
 			}
 		}
+		//--------------------------------------------------//
 	}
 
 	bool CheckGrounded() {
