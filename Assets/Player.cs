@@ -19,11 +19,39 @@ public class Player : MonoBehaviour {
 
 	public float jumpStrength = 3.0f;
 
+	public Material snowMat;
+
+	float snowLevel = 0.0f;
+
+	public float snowAccumSpeed = 0.2f;
+
+	bool moved;
+
+	public Material mat;
+
 	void Start () {
 		input = GetComponent<BaseInput>();
 	}
 
 	void Update () {
+		if (moved) {
+			snowLevel -= snowAccumSpeed * 5.0f * Time.deltaTime;
+			if(snowLevel < 0.1f) {
+				snowLevel = 0.1f;
+				moved = false;
+			}
+		} else {
+			snowLevel += snowAccumSpeed * Time.deltaTime;
+			if (snowLevel > 1.0f)
+				snowLevel = 1.0f;
+			if (rigidbody.velocity.sqrMagnitude > 0.05f || input.dir.magnitude > 0.0f) 
+				moved = true;
+		}
+		mat.SetFloat ("_Snow", snowLevel);
+
+		bottomAnimator.SetFloat ("SnowLevel", snowLevel);
+		topAnimator.SetFloat ("SnowLevel", snowLevel);
+
 		float speedMod = input.sprint ? 2.0f : 1.0f;
 		rigidbody.MovePosition(transform.position + transform.TransformDirection(new Vector3(0.0f, 0.0f, input.dir.z)) * moveSpeed * speedMod * Time.deltaTime);
 		rigidbody.MoveRotation (Quaternion.Euler(transform.eulerAngles + new Vector3 (0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime));
