@@ -41,7 +41,8 @@ public class BaseBullet : MonoBehaviour {
 			return;
 		}
 
-		thisTransform.position += direction * speed * Time.deltaTime;
+		thisRigidbody.MovePosition(thisTransform.position + direction * speed * Time.deltaTime);
+		//thisTransform.position += direction * speed * Time.deltaTime;
 
 		lifeTimer += Time.deltaTime;
 	}

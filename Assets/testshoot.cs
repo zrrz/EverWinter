@@ -4,7 +4,7 @@ using System.Collections;
 public class testshoot : MonoBehaviour {
 
 	public Transform shootPoint;
-	public LayerMask ignoredLayers;
+	public LayerMask rayCastLayers;
 
 	// Use this for initialization
 	void Start () {
@@ -13,21 +13,19 @@ public class testshoot : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if(Input.GetMouseButtonDown(0)) {
+		if(Input.GetButtonDown("Fire1")) {
 			RaycastHit hit;
-			if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, ignoredLayers)) {
+			if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit,Mathf.Infinity, rayCastLayers)) {
 				Vector3 shootDir = (hit.point - shootPoint.position);
 				shootDir.Normalize();
 
-				Debug.DrawLine(Camera.main.transform.position, hit.point, Color.cyan, 5.0f);
-				Debug.DrawLine(shootPoint.position, shootDir, Color.blue, 3.0f);
+				Debug.DrawLine(shootPoint.position, hit.point, Color.cyan, 5.0f);
 				BulletManager.instance.Shoot(true, BulletType.normal, shootPoint.position, shootDir);
 			} else {
 				Vector3 shootTarget = Camera.main.transform.position + (Camera.main.transform.forward * 20.0f);
 				Vector3 shootDir = (shootTarget - shootPoint.transform.position);
 				shootDir.Normalize();
 
-				Debug.DrawLine(shootPoint.position, shootDir, Color.red, 3.0f);
 				BulletManager.instance.Shoot(true, BulletType.normal, shootPoint.position, shootDir);
 			}
 		}
