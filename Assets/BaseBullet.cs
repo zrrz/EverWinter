@@ -12,7 +12,9 @@ public class BaseBullet : MonoBehaviour {
 
 	Rigidbody thisRigidbody;
 	Transform thisTransform;
+	Vector3 direction;
 	float lifeTimer = 0.0f;
+	int damage = 1;
 
 	// Use this for initialization
 	void Awake () {
@@ -22,16 +24,15 @@ public class BaseBullet : MonoBehaviour {
 		type = BulletType.normal;
 	}
 
-	public void Shoot(bool isPlayerBullet, Vector3 shootPos, Vector3 dir) {
+	public virtual void Shoot(bool isPlayerBullet, Vector3 shootPos, Vector3 dir) {
 		if(isPlayerBullet)
 			thisTransform.tag = "PlayerBullet";
 		else
 			thisTransform.tag = "EnemyBullet";
 
 		thisTransform.position = shootPos;
-		thisRigidbody.AddForce(dir * speed);
+		direction = dir;
 	}
-	
 
 	void Update () {
 		if(lifeTimer >= lifeTime) {
@@ -40,7 +41,16 @@ public class BaseBullet : MonoBehaviour {
 			return;
 		}
 
+		thisTransform.position += direction * speed * Time.deltaTime;
+
 		lifeTimer += Time.deltaTime;
+	}
+
+	void OnTriggerEnter(Collider col) {
+		if(thisTransform.tag == "PlayerBullet" && col.tag.Contains("Enemy"))
+			col.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
+		else if(thisTransform.tag == "EnemyBullet" && col.tag == "Player")
+			col.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
 	}
 }
 
