@@ -78,7 +78,8 @@ public class CameraFollow : MonoBehaviour {
 
 			y = ClampAngle(y, yMinLimit, yMaxLimit);
 
-			Quaternion rotation = Quaternion.Euler(y, x, 0);
+			//Quaternion rotation = Quaternion.Euler(y, x, 0);
+			Quaternion rotation = Quaternion.Euler(0, x, 0);
 
 			Debug.DrawRay(HandleCollisionZoom(), new Vector3(0f, 0f, 0f), Color.blue);
 			distance = Vector3.Distance(HandleCollisionZoom(), target.position);

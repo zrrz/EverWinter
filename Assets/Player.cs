@@ -32,7 +32,9 @@ public class Player : MonoBehaviour {
 	[System.NonSerialized]					
 	public float lookWeight;					// the amount to transition when using head look	
 	
-	public float lookSmoother = 3f;				// a smoothing setting for camera motion
+	//public float lookSmoother = 3f;				// a smoothing setting for camera motion
+
+	public Transform cameraObj;
 
 	void Start () {
 		input = GetComponent<BaseInput>();
@@ -60,11 +62,25 @@ public class Player : MonoBehaviour {
 
 		//---------------------------------------------------//
 		//---------------------Movement----------------------//
-		float speedMod = input.sprint ? 2.0f : 1.0f;
+		float speedMod = input.sprint ? 1.8f : 1.0f;
 		rigidbody.angularVelocity = Vector3.zero;
-		rigidbody.MovePosition(transform.position + transform.TransformDirection(new Vector3(0.0f, 0.0f, input.dir.z)) * moveSpeed * speedMod * Time.deltaTime);
-		rigidbody.MoveRotation (Quaternion.Euler(transform.eulerAngles + new Vector3 (0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime));
+		//TransformDirection(new Vector3(0.0f, 0.0f, input.dir.z)
+
+		float diff = 0;
+		if (input.dir.magnitude > 0.0f) {
+			rigidbody.MovePosition(transform.position + (transform.forward*input.dir.z) * moveSpeed * speedMod * Time.deltaTime);
+			//float tarAng = Mathf.Atan2(transform.forward.z - cameraObj.forward.z, transform.forward.x - cameraObj.forward.x);
+			//diff = (tarAng - transform.eulerAngles.y)/Time.deltaTime;
+			diff = transform.eulerAngles.y - cameraObj.eulerAngles.y;
+			print(diff);
+			//diff = Mathf.Clamp(diff, -turnSpeed, turnSpeed);
+		}
+		rigidbody.MoveRotation (Quaternion.Euler (transform.eulerAngles + new Vector3(0.0f,diff,0.0f)));
+		//rigidbody.MoveRotation (Quaternion.Euler(transform.eulerAngles + new Vector3 (0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime));
 		//transform.Rotate (new Vector3(0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime);
+
+
+
 
 		bottomAnimator.SetBool("Running", input.dir.z != 0.0f);
 		bottomAnimator.SetBool("Sprinting", input.sprint);
