@@ -3,27 +3,100 @@ using System.Collections;
 
 public class CameraFollow : MonoBehaviour {
 
-	public GameObject target;
-	public Vector3 offset;
+	public Transform target;
 
-	const float CAMERA_TURN_SPEED = 0.1f;
-	const float CAMERA_FOLLOW_SPEED = 0.1f;
-
-	public bool DEBUG_LERP_ON = false;
+	public float distance = 5.0f;
+	public float xSpeed = 120.0f;
+	public float ySpeed = 120.0f;
+	
+	public float yMinLimit = -20f;
+	public float yMaxLimit = 80f;
+	
+	public float distanceMin = .5f;
+	public float distanceMax = 15f;
+	
+	float x = 0.0f;
+	float y = 0.0f;
 
 	void Start () {
-	
+		Vector3 angles = transform.eulerAngles;
+		x = angles.y;
+		y = angles.x;
+		
+		// Make the rigid body not change rotation
+		if (rigidbody)
+			rigidbody.freezeRotation = true;
 	}
 
-	void Update () {
-		if (DEBUG_LERP_ON) {
-			if (Vector3.Distance (transform.position, target.transform.position + target.transform.TransformDirection (offset)) > 0.2f) {
-				transform.position = Vector3.Lerp (transform.position, target.transform.position + target.transform.TransformDirection (offset), Time.deltaTime);
+	Vector3 HandleCollisionZoom() {
+
+		Vector3 camOut = Vector3.Normalize(target.position - transform.position);
+		Vector3 maxCamPos = target.position - (camOut * distanceMax);
+
+		float minHitDistance = 9999f; 
+
+		Vector3[] corners = GetNearPlaneCorners();
+		for (int i = 0; i < 4; i++)
+		{
+			Vector3 offsetToCorner = corners[i] - transform.position;
+			RaycastHit hit;
+			Vector3 rayEnd = maxCamPos + offsetToCorner;
+			Debug.DrawLine(target.position + offsetToCorner, rayEnd, Color.red);
+			if(Physics.Linecast(target.position + offsetToCorner, rayEnd, out hit)) {
+				if(Vector3.Distance(hit.point, target.position) > 0.5f)
+					minHitDistance = hit.distance;
 			}
-			transform.rotation = Quaternion.Lerp (transform.rotation, Quaternion.LookRotation (target.transform.position - transform.position), CAMERA_TURN_SPEED);
-		} else {
-			transform.position = target.transform.position + target.transform.TransformDirection (offset);
-			transform.rotation = Quaternion.LookRotation (target.transform.position - transform.position);
 		}
+		if(minHitDistance < 9999f)
+			return target.position - (camOut * minHitDistance);
+		else
+			return maxCamPos;
+	}
+
+	Vector3[] GetNearPlaneCorners() {
+		Vector3[] nearClipCorners = new Vector3[4];
+
+		float nearH = 2 * Mathf.Tan (camera.fieldOfView * Mathf.Deg2Rad / 2.0f) * camera.nearClipPlane;
+		float nearW = nearH * camera.aspect;
+
+		Vector3 nearC = transform.position + transform.forward * camera.nearClipPlane;
+
+		nearClipCorners [0] = nearC + (transform.up * (nearH / 2.0f)) - (transform.right * (nearW / 2.0f));
+		nearClipCorners [1] = nearC + (transform.up * (nearH / 2.0f)) + (transform.right * (nearW / 2.0f));
+		nearClipCorners [2] = nearC - (transform.up * (nearH / 2.0f)) - (transform.right * (nearW / 2.0f));
+		nearClipCorners [3] = nearC - (transform.up * (nearH / 2.0f)) + (transform.right * (nearW / 2.0f));
+
+		return nearClipCorners;
+	}
+
+	void LateUpdate () {
+		if (target) {
+			Vector3 lookPos = target.position;
+			Screen.lockCursor = true;
+			x += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
+			y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
+
+			y = ClampAngle(y, yMinLimit, yMaxLimit);
+
+			Quaternion rotation = Quaternion.Euler(y, x, 0);
+
+			Debug.DrawRay(HandleCollisionZoom(), new Vector3(0f, 0f, 0f), Color.blue);
+			distance = Vector3.Distance(HandleCollisionZoom(), target.position);
+
+			Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
+			Vector3 position = rotation * negDistance + lookPos;
+
+			transform.rotation = rotation;
+			transform.position = position;		
+		}
+	}
+	
+	public static float ClampAngle(float angle, float min, float max)
+	{
+		if (angle < -360F)
+			angle += 360F;
+		if (angle > 360F)
+			angle -= 360F;
+		return Mathf.Clamp(angle, min, max);
 	}
 }
