@@ -18,6 +18,8 @@ public class CameraFollow : MonoBehaviour {
 	float x = 0.0f;
 	float y = 0.0f;
 
+	public LayerMask mask;
+
 	void Start () {
 		Vector3 angles = transform.eulerAngles;
 		x = angles.y;
@@ -42,7 +44,7 @@ public class CameraFollow : MonoBehaviour {
 			RaycastHit hit;
 			Vector3 rayEnd = maxCamPos + offsetToCorner;
 			Debug.DrawLine(target.position + offsetToCorner, rayEnd, Color.red);
-			if(Physics.Linecast(target.position + offsetToCorner, rayEnd, out hit)) {
+			if(Physics.Linecast(target.position + offsetToCorner, rayEnd, out hit, mask)) {
 				if(Vector3.Distance(hit.point, target.position) > 0.5f)
 					minHitDistance = hit.distance;
 			}
@@ -79,7 +81,7 @@ public class CameraFollow : MonoBehaviour {
 			y = ClampAngle(y, yMinLimit, yMaxLimit);
 
 			//Quaternion rotation = Quaternion.Euler(y, x, 0);
-			Quaternion rotation = Quaternion.Euler(0, x, 0);
+			Quaternion rotation = Quaternion.Euler(y, x, 0);
 
 			Debug.DrawRay(HandleCollisionZoom(), new Vector3(0f, 0f, 0f), Color.blue);
 			distance = Vector3.Distance(HandleCollisionZoom(), target.position);

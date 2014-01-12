@@ -32,10 +32,10 @@ public class Player : MonoBehaviour {
 	[System.NonSerialized]					
 	public float lookWeight;					// the amount to transition when using head look	
 	
-	//public float lookSmoother = 3f;				// a smoothing setting for camera motion
+	public float lookSmoother = 3f;				// a smoothing setting for camera motion
 
 	public Transform cameraObj;
-
+	
 	void Start () {
 		input = GetComponent<BaseInput>();
 	}
@@ -75,8 +75,8 @@ public class Player : MonoBehaviour {
 			print(diff);
 			//diff = Mathf.Clamp(diff, -turnSpeed, turnSpeed);
 		}
-		rigidbody.MoveRotation (Quaternion.Euler (transform.eulerAngles + new Vector3(0.0f,diff,0.0f)));
-		//rigidbody.MoveRotation (Quaternion.Euler(transform.eulerAngles + new Vector3 (0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime));
+		//rigidbody.MoveRotation (Quaternion.Euler (transform.eulerAngles + new Vector3(0.0f,diff,0.0f)));
+		rigidbody.MoveRotation (Quaternion.Euler(transform.eulerAngles + new Vector3 (0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime));
 		//transform.Rotate (new Vector3(0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime);
 
 
@@ -103,18 +103,19 @@ public class Player : MonoBehaviour {
 		}
 		//--------------------------------------------------//
 
-		//if(Input.GetButton("Fire2"))
-		//{
+		if(Input.GetButton("Fire2"))
+		{
 			// ...set a position to look at with the head, and use Lerp to smooth the look weight from animation to IK (see line 54)
-		//	topAnimator.SetLookAtPosition(enemy.transform.position);
-		//	lookWeight = Mathf.Lerp(lookWeight,1f,Time.deltaTime*lookSmoother);
-		//}
+			topAnimator.SetLookAtPosition(enemy.transform.position);
+			lookWeight = Mathf.Lerp(lookWeight,1f,Time.deltaTime*lookSmoother);
+		
+		}
 		// else, return to using animation for the head by lerping back to 0 for look at weight
-		//else
-		//{
-		//	lookWeight = Mathf.Lerp(lookWeight,0f,Time.deltaTime*lookSmoother);
-		//}
-		//topAnimator.SetLookAtWeight(lookWeight);
+		else
+		{
+			lookWeight = Mathf.Lerp(lookWeight,0f,Time.deltaTime*lookSmoother);
+		}
+		topAnimator.SetLookAtWeight(lookWeight);
 	}
 
 	bool CheckGrounded() {
