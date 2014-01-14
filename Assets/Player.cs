@@ -71,15 +71,17 @@ public class Player : MonoBehaviour {
 			rigidbody.MovePosition(transform.position + (transform.forward*input.dir.z) * moveSpeed * speedMod * Time.deltaTime);
 			//float tarAng = Mathf.Atan2(transform.forward.z - cameraObj.forward.z, transform.forward.x - cameraObj.forward.x);
 			//diff = (tarAng - transform.eulerAngles.y)/Time.deltaTime;
-			diff = transform.eulerAngles.y - cameraObj.eulerAngles.y;
-			print(diff);
-			//diff = Mathf.Clamp(diff, -turnSpeed, turnSpeed);
+
+			Vector3 lookDir = (transform.position - cameraObj.transform.position).normalized;
+			lookDir.y = 0.0f;
+			diff = transform.rotation.y - Quaternion.LookRotation(lookDir).eulerAngles.y;
+			print (diff);
+			diff = Mathf.Clamp(diff, -turnSpeed, turnSpeed);
+			//transform.rotation = Quaternion.LookRotation (lookDir);
 		}
-		//rigidbody.MoveRotation (Quaternion.Euler (transform.eulerAngles + new Vector3(0.0f,diff,0.0f)));
-		rigidbody.MoveRotation (Quaternion.Euler(transform.eulerAngles + new Vector3 (0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime));
+		transform.rotation = Quaternion.Euler (transform.eulerAngles + new Vector3(0.0f, diff, 0.0f));
+		//rigidbody.MoveRotation (Quaternion.Euler(transform.eulerAngles + new Vector3 (0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime));
 		//transform.Rotate (new Vector3(0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime);
-
-
 
 
 		bottomAnimator.SetBool("Running", input.dir.z != 0.0f);
