@@ -45,17 +45,20 @@
             o.Normal = UnpackNormal (tex2D (_Bump, IN.uv_Bump));
             
             //dot(WorldNormalVector(IN, o.Normal), _SnowDirection.xyz)
-            //lerp(1, -1, _Snow)
+          
             
-          //  float mod = ceil(dot(WorldNormalVector(IN, o.Normal), _SnowDirection.xyz) - lerp(1, -1, _Snow));
+          	float mod = dot(WorldNormalVector(IN, o.Normal), _SnowDirection.xyz) >= lerp(1,-1,_Snow);
             
          //   o.Albedo = (_SnowColor * mod) + (c.rgb * (mod + 1));
             
-            if(dot(WorldNormalVector(IN, o.Normal), _SnowDirection.xyz)>=lerp(1,-1,_Snow)) {
-                o.Albedo = _SnowColor.rgb;
-            } else {
-                o.Albedo = c.rgb;
-            }
+           // if(dot(WorldNormalVector(IN, o.Normal), _SnowDirection.xyz)>=lerp(1,-1,_Snow)) {
+           //     o.Albedo = _SnowColor.rgb;
+            //} else {
+            //    o.Albedo = c.rgb;
+           // }
+            
+            o.Albedo = lerp(c.rgb, _SnowColor.rgb, mod);
+            
             o.Alpha = 1;
         }
         ENDCG
