@@ -58,6 +58,8 @@
            // }
             
             o.Albedo = lerp(c.rgb, _SnowColor.rgb, mod);
+           
+            //o.Albedo = lerp(c.rgb, _SnowColor.rgb, _Snow);
             
             o.Alpha = 1;
         }
