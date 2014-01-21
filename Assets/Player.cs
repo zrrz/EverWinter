@@ -77,7 +77,7 @@ public class Player : MonoBehaviour {
 			lookDir.Normalize();
 			lookDir.y = 0.0f;
 
-			transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation (lookDir), turnSpeed); 
+			transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation (lookDir), turnSpeed);
 		}
 
 		bottomAnimator.SetBool("Running", input.dir.magnitude != 0.0f);
@@ -122,6 +122,6 @@ public class Player : MonoBehaviour {
 	}
 
 	void OnGUI() {
-		GUI.Box(new Rect(0.0f, 0.0f, 100.0f, 40.0f), "WASD to move\nShift to sprint"); 
+		GUI.Box(new Rect(0.0f, 0.0f, 100.0f, 60.0f), "WASD to move\nShift to sprint\nT to restart"); 
 	}
 }
