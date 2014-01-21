@@ -6,7 +6,8 @@ public class Player : MonoBehaviour {
 	BaseInput input;
 
 	public float moveSpeed = 3.0f;
-	public float turnSpeed = 20.0f;
+	public float sprintSpeedMod = 1.8f;
+	public float turnSpeed = 0.6f;
 
 	public Animator topAnimator;
 	public Animator bottomAnimator;
@@ -62,32 +63,27 @@ public class Player : MonoBehaviour {
 
 		//---------------------------------------------------//
 		//---------------------Movement----------------------//
-		float speedMod = input.sprint ? 1.8f : 1.0f;
+		float speedMod = input.sprint ? sprintSpeedMod : 1.0f;
 		rigidbody.angularVelocity = Vector3.zero;
-		//TransformDirection(new Vector3(0.0f, 0.0f, input.dir.z)
 
-		float diff = 0;
 		if (input.dir.magnitude > 0.0f) {
-			rigidbody.MovePosition(transform.position + (transform.forward*input.dir.z) * moveSpeed * speedMod * Time.deltaTime);
-			//float tarAng = Mathf.Atan2(transform.forward.z - cameraObj.forward.z, transform.forward.x - cameraObj.forward.x);
-			//diff = (tarAng - transform.eulerAngles.y)/Time.deltaTime;
+			rigidbody.MovePosition(transform.position + transform.forward * moveSpeed * speedMod * Time.deltaTime);
 
-			Vector3 lookDir = (transform.position - cameraObj.transform.position).normalized;
+			Vector3 lookDir = Vector3.zero;
+			if(Mathf.Abs(input.dir.z) > 0.0f)
+				lookDir += (transform.position - cameraObj.transform.position).normalized * Mathf.Sign(input.dir.z);
+			if(Mathf.Abs(input.dir.x) > 0.0f)
+				lookDir += Vector3.Cross(transform.up, (transform.position - cameraObj.transform.position).normalized) * Mathf.Sign(input.dir.x);
+			lookDir.Normalize();
 			lookDir.y = 0.0f;
-			diff = transform.rotation.y - Quaternion.LookRotation(lookDir).eulerAngles.y;
-			print (diff);
-			diff = Mathf.Clamp(diff, -turnSpeed, turnSpeed);
-			//transform.rotation = Quaternion.LookRotation (lookDir);
+
+			transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation (lookDir), turnSpeed); 
 		}
-		transform.rotation = Quaternion.Euler (transform.eulerAngles + new Vector3(0.0f, diff, 0.0f));
-		//rigidbody.MoveRotation (Quaternion.Euler(transform.eulerAngles + new Vector3 (0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime));
-		//transform.Rotate (new Vector3(0.0f, input.dir.x, 0.0f) * turnSpeed * Time.deltaTime);
 
-
-		bottomAnimator.SetBool("Running", input.dir.z != 0.0f);
+		bottomAnimator.SetBool("Running", input.dir.magnitude != 0.0f);
 		bottomAnimator.SetBool("Sprinting", input.sprint);
 
-		topAnimator.SetBool("Running", input.dir.z != 0.0f);
+		topAnimator.SetBool("Running", input.dir.magnitude != 0.0f);
 		topAnimator.SetBool("Sprinting", input.sprint);
 
 		grounded = CheckGrounded();

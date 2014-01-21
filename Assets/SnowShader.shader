@@ -31,35 +31,22 @@
 
         void vert (inout appdata_full v) {
             //Convert the normal to world coortinates
-            //float3 snormal = normalize(_SnowDirection.xyz);
-            float3 sn = mul((float3x3)_World2Object, normalize(_SnowDirection.xyz)).xyz;
+            //float3 sn = mul((float3x3)_World2Object, normalize(_SnowDirection.xyz)).xyz;
 
-            if(dot(v.normal, sn) >= lerp(1,-1, (_Snow*2)/3)) {
-            //float mod = ceil(dot(v.normal, sn) - lerp(1, -1, (_Snow*2)/3));
-            	v.vertex.xyz += normalize(sn + v.normal) * _SnowDepth * _Snow;// * mod;
-            }
+			//float mod = dot(v.normal, sn) >= lerp(1,-1, (_Snow*2)/3);
+			//if(dot(v.normal, sn) >= lerp(1,-1, (_Snow*2)/3)) {
+           		//v.vertex.xyz += lerp(0, normalize(sn + v.normal) * _SnowDepth * _Snow, mod)
+           	//	v.vertex.xyz += normalize(sn + v.normal) * _SnowDepth * _Snow;
+            //}
         }
 
         void surf (Input IN, inout SurfaceOutput o) { 
             half4 c = tex2D (_MainTex, IN.uv_MainTex);
             o.Normal = UnpackNormal (tex2D (_Bump, IN.uv_Bump));
-            
-            //dot(WorldNormalVector(IN, o.Normal), _SnowDirection.xyz)
-          
-            
+                
           	float mod = dot(WorldNormalVector(IN, o.Normal), _SnowDirection.xyz) >= lerp(1,-1,_Snow);
             
-         //   o.Albedo = (_SnowColor * mod) + (c.rgb * (mod + 1));
-            
-           // if(dot(WorldNormalVector(IN, o.Normal), _SnowDirection.xyz)>=lerp(1,-1,_Snow)) {
-           //     o.Albedo = _SnowColor.rgb;
-            //} else {
-            //    o.Albedo = c.rgb;
-           // }
-            
             o.Albedo = lerp(c.rgb, _SnowColor.rgb, mod);
-           
-            //o.Albedo = lerp(c.rgb, _SnowColor.rgb, _Snow);
             
             o.Alpha = 1;
         }
