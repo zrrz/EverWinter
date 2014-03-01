@@ -45,6 +45,7 @@
             o.Normal = UnpackNormal (tex2D (_Bump, IN.uv_Bump));
                 
           	float mod = dot(WorldNormalVector(IN, o.Normal), _SnowDirection.xyz) >= lerp(1,-1,_Snow);
+          	//float mod = dot(o.Normal, half3(0,1,0)) >= lerp(1,-1,_Snow);
             
             o.Albedo = lerp(c.rgb, _SnowColor.rgb, mod);
             
